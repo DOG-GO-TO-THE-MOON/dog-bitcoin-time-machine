@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$DOG Bitcoin Time Machine</title>
+  <style>
+    /* General Reset */
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #f4f4f9, #eaeaea);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Container Styling */
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Header Styling */
+    h1 {
+      color: #ff9800;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    /* Form Styling */
+    .form label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    .form input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #e68900;
+    }
+
+    /* Results Styling */
+    .results {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .results h2 {
+      margin: 0 0 10px;
+      font-size: 1.4em;
+      color: #333;
+    }
+
+    .results p {
+      margin: 5px 0;
+      font-size: 1em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      button {
+        width: 100%;
+        font-size: 1em;
+      }
+
+      .results h2 {
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>$DOG Bitcoin Time Machine</h1>
+    <p>Discover how $DOG can help you buy Bitcoin at historical prices!</p>
+
+    <div class="form">
+      <label for="btcPrice">Current Bitcoin Price ($):</label>
+      <input type="number" id="btcPrice" placeholder="e.g., 100000">
+
+      <label for="dogMultiplier">Target $DOG Multiplier (e.g., 10x):</label>
+      <input type="number" id="dogMultiplier" placeholder="e.g., 10">
+
+      <label for="investment">Investment Amount ($):</label>
+      <input type="number" id="investment" placeholder="e.g., 1000">
+
+      <button id="calculate">Calculate</button>
+    </div>
+
+    <div class="results">
+      <h2>Results</h2>
+      <p id="futureValue">Future Value: </p>
+      <p id="btcQuantity">Bitcoin You Could Buy: </p>
+      <p id="historicalPrice">Equivalent Bitcoin Price: </p>
+    </div>
+  </div>
+
+  <script>
+    // Historical Bitcoin Prices
+    const historicalPrices = [
+      { year: 2020, price: 10000 },
+      { year: 2017, price: 1000 },
+      { year: 2011, price: 1 },
+    ];
+
+    // Handle Calculate Button Click
+    document.getElementById('calculate').addEventListener('click', function () {
+      const btcPrice = parseFloat(document.getElementById('btcPrice').value);
+      const dogMultiplier = parseFloat(document.getElementById('dogMultiplier').value);
+      const investment = parseFloat(document.getElementById('investment').value);
+
+      if (btcPrice && dogMultiplier && investment) {
+        const futureValue = investment * dogMultiplier;
+        const btcQuantity = futureValue / btcPrice;
+
+        const closestPrice = historicalPrices.find(data => data.price <= btcPrice / dogMultiplier);
+
+        document.getElementById('futureValue').textContent = `Future Value: $${futureValue}`;
+        document.getElementById('btcQuantity').textContent = `Bitcoin You Could Buy: ${btcQuantity.toFixed(2)}`;
+        document.getElementById('historicalPrice').textContent = `Equivalent Bitcoin Price: $${closestPrice?.price || 'N/A'} (Year: ${closestPrice?.year || 'N/A'})`;
+      } else {
+        alert('Please fill out all fields!');
+      }
+    });
+  </script>
+</body>
+</html>
