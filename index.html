@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>$DOG Bitcoin Time Machine</title>
+    <style>
+      /* General Reset */
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #f4f4f9, #eaeaea);
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      /* Container Styling */
+      .container {
+        width: 90%;
+        max-width: 600px;
+        margin: 20px auto;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      /* Header Styling */
+      h1 {
+        color: #ff9800;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+      }
+
+      /* Form Styling */
+      .form label {
+        font-weight: bold;
+        display: block;
+        margin: 10px 0 5px;
+      }
+
+      .form input,
+      .form button {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box;
+      }
+
+      .form button {
+        background: #ff9800;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .form button:hover {
+        background: #e68900;
+      }
+
+      /* Slider Styling */
+      .slider-container {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      input[type="range"] {
+        width: calc(100% - 20px);
+        -webkit-appearance: none;
+        appearance: none;
+        background: #f4f4f4;
+        height: 8px;
+        border-radius: 5px;
+        outline: none;
+        margin-right: 10px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      /* Results Styling */
+      .results {
+        margin-top: 20px;
+        padding: 10px;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .results h2 {
+        margin: 0 0 10px;
+        font-size: 1.4em;
+        color: #333;
+      }
+
+      .results p {
+        margin: 5px 0;
+        font-size: 1em;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 1.5em;
+        }
+
+        button {
+          font-size: 1em;
+        }
+
+        .results h2 {
+          font-size: 1.2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>$DOG Bitcoin Time Machine</h1>
+      <p>Discover how $DOG can help you buy Bitcoin at historical prices!</p>
+
+      <div class="form">
+        <label for="btcPrice">Current Bitcoin Price ($):</label>
+        <input type="text" id="btcPrice" placeholder="e.g., 100,000" />
+
+        <label for="investment">Investment Amount ($):</label>
+        <input type="text" id="investment" placeholder="e.g., 1,000" />
+
+        <label for="dogMultiplier">Select $DOG Multiplier:</label>
+        <div class="slider-container">
+          <input
+            type="range"
+            id="dogMultiplier"
+            min="10"
+            max="100"
+            step="10"
+            value="10"
+            oninput="updateMultiplier(this.value)"
+          />
+          <div class="labels">
+            <span>10x</span><span>20x</span><span>30x</span><span>40x</span
+            ><span>50x</span><span>60x</span><span>70x</span><span>80x</span
+            ><span>90x</span><span>100x</span>
+          </div>
+        </div>
+        <p id="multiplier-value">Multiplier: 10x</p>
+
+        <button id="calculate">Calculate</button>
+      </div>
+
+      <div class="results">
+        <h2>Results</h2>
+        <p id="futureValue">Future Value:</p>
+        <p id="btcQuantity">Bitcoin You Could Buy:</p>
+        <p id="historicalPrice">Equivalent Bitcoin Price:</p>
+      </div>
+    </div>
+
+    <script>
+      // Format numbers with commas
+      function formatNumberWithCommas(num) {
+        if (!num) return "";
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+    
+      // Update input fields dynamically as the user types
+      function handleInputFormatting(event) {
+        const input = event.target;
+        const rawValue = input.value.replace(/,/g, ""); // Remove existing commas
+        if (!isNaN(rawValue) && rawValue.trim() !== "") {
+          input.value = formatNumberWithCommas(rawValue);
+        }
+      }
+    
+      // Add event listeners to input fields for formatting
+      const btcPriceInput = document.getElementById("btcPrice");
+      const investmentInput = document.getElementById("investment");
+    
+      btcPriceInput.addEventListener("input", handleInputFormatting);
+      investmentInput.addEventListener("input", handleInputFormatting);
+    
+      // Update multiplier value display
+      function updateMultiplier(value) {
+        document.getElementById("multiplier-value").textContent = `Multiplier: ${value}x`;
+      }
+    
+      // Historical Bitcoin Prices with Detailed Milestones
+      const historicalPrices = [
+        { year: 2010, price: 0.3 },
+        { year: 2011, price: 1 },
+        { year: 2011, price: 5 },
+        { year: 2012, price: 10 },
+        { year: 2013, price: 25 },
+        { year: 2013, price: 50 },
+        { year: 2013, price: 75 },
+        { year: 2013, price: 100 },
+        { year: 2016, price: 200 },
+        { year: 2016, price: 300 },
+        { year: 2016, price: 400 },
+        { year: 2016, price: 500 },
+        { year: 2016, price: 600 },
+        { year: 2016, price: 700 },
+        { year: 2016, price: 800 },
+        { year: 2016, price: 900 },
+        { year: 2017, price: 1000 },
+        { year: 2017, price: 1250 },
+        { year: 2017, price: 1500 },
+        { year: 2017, price: 2000 },
+        { year: 2017, price: 2500 },
+        { year: 2017, price: 5000 },
+        { year: 2017, price: 7500 },
+        { year: 2017, price: 10000 },
+        { year: 2017, price: 15000 },
+        { year: 2017, price: 20000 },
+        { year: 2020, price: 28000 },
+        { year: 2021, price: 45000 },
+        { year: 2021, price: 50000 },
+        { year: 2021, price: 60000 },
+        { year: 2021, price: 68000 },
+        { year: 2024, price: 105000 },
+      ];
+    
+      // Handle Calculate Button Click
+      document.getElementById("calculate").addEventListener("click", function () {
+        const btcPrice = parseFloat(btcPriceInput.value.replace(/,/g, "")); // Remove commas for calculation
+        const dogMultiplier = parseFloat(document.getElementById("dogMultiplier").value);
+        const investment = parseFloat(investmentInput.value.replace(/,/g, "")); // Remove commas for calculation
+    
+        if (btcPrice && dogMultiplier && investment) {
+          const futureValue = investment * dogMultiplier;
+          const btcQuantity = futureValue / btcPrice;
+          const equivalentPrice = btcPrice / dogMultiplier;
+    
+          const closestPrice = historicalPrices
+            .filter((data) => data.price <= equivalentPrice)
+            .reduce((prev, curr) => (curr.price > prev.price ? curr : prev), {
+              price: 0,
+              year: "N/A",
+            });
+    
+          // Format numbers for display
+          const formatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+          });
+    
+          const bitcoinFormatter = new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+    
+          document.getElementById("futureValue").textContent = `Future Value: ${formatter.format(futureValue)}`;
+          document.getElementById("btcQuantity").textContent = `Bitcoin You Could Buy: ${bitcoinFormatter.format(btcQuantity)}`;
+          document.getElementById(
+            "historicalPrice"
+          ).textContent = `Equivalent Bitcoin Price: ${formatter.format(
+            closestPrice.price
+          )} (Year: ${closestPrice.year})`;
+        } else {
+          alert("Please fill out all fields!");
+        }
+      });
+    
+      // Add formatted placeholder text
+      btcPriceInput.placeholder = "e.g., " + formatNumberWithCommas("100000");
+      investmentInput.placeholder = "e.g., " + formatNumberWithCommas("1000");
+    </script>
+  </body>
+</html>
