@@ -45,28 +45,70 @@
         margin: 10px 0 5px;
       }
 
-      .form input {
-        width: 100%;
+      .form input,
+      .form button {
+        width: calc(100% - 20px);
         padding: 10px;
         margin: 10px 0;
         border: 1px solid #ccc;
         border-radius: 5px;
         font-size: 1em;
+        box-sizing: border-box;
       }
 
-      button {
-        padding: 10px 20px;
+      .form button {
         background: #ff9800;
         color: #fff;
         border: none;
-        border-radius: 5px;
         cursor: pointer;
-        font-size: 1em;
         transition: background 0.3s;
       }
 
-      button:hover {
+      .form button:hover {
         background: #e68900;
+      }
+
+      /* Slider Styling */
+      .slider-container {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      input[type="range"] {
+        width: calc(100% - 20px);
+        -webkit-appearance: none;
+        appearance: none;
+        background: #f4f4f4;
+        height: 8px;
+        border-radius: 5px;
+        outline: none;
+        margin-right: 10px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #333;
       }
 
       /* Results Styling */
@@ -96,7 +138,6 @@
         }
 
         button {
-          width: 100%;
           font-size: 1em;
         }
 
@@ -113,13 +154,29 @@
 
       <div class="form">
         <label for="btcPrice">Current Bitcoin Price ($):</label>
-        <input type="number" id="btcPrice" placeholder="e.g., 100000" />
-
-        <label for="dogMultiplier">Target $DOG Multiplier (e.g., 10x):</label>
-        <input type="number" id="dogMultiplier" placeholder="e.g., 10" />
+        <input type="text" id="btcPrice" placeholder="e.g., 100,000" />
 
         <label for="investment">Investment Amount ($):</label>
-        <input type="number" id="investment" placeholder="e.g., 1000" />
+        <input type="text" id="investment" placeholder="e.g., 1,000" />
+
+        <label for="dogMultiplier">Select $DOG Multiplier:</label>
+        <div class="slider-container">
+          <input
+            type="range"
+            id="dogMultiplier"
+            min="10"
+            max="100"
+            step="10"
+            value="10"
+            oninput="updateMultiplier(this.value)"
+          />
+          <div class="labels">
+            <span>10x</span><span>20x</span><span>30x</span><span>40x</span
+            ><span>50x</span><span>60x</span><span>70x</span><span>80x</span
+            ><span>90x</span><span>100x</span>
+          </div>
+        </div>
+        <p id="multiplier-value">Multiplier: 10x</p>
 
         <button id="calculate">Calculate</button>
       </div>
@@ -133,61 +190,114 @@
     </div>
 
     <script>
-      // Historical Bitcoin Prices
+      // Format numbers with commas
+      function formatNumberWithCommas(num) {
+        if (!num) return "";
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+    
+      // Update input fields dynamically as the user types
+      function handleInputFormatting(event) {
+        const input = event.target;
+        const rawValue = input.value.replace(/,/g, ""); // Remove existing commas
+        if (!isNaN(rawValue) && rawValue.trim() !== "") {
+          input.value = formatNumberWithCommas(rawValue);
+        }
+      }
+    
+      // Add event listeners to input fields for formatting
+      const btcPriceInput = document.getElementById("btcPrice");
+      const investmentInput = document.getElementById("investment");
+    
+      btcPriceInput.addEventListener("input", handleInputFormatting);
+      investmentInput.addEventListener("input", handleInputFormatting);
+    
+      // Update multiplier value display
+      function updateMultiplier(value) {
+        document.getElementById("multiplier-value").textContent = `Multiplier: ${value}x`;
+      }
+    
+      // Historical Bitcoin Prices with Detailed Milestones
       const historicalPrices = [
-        { year: 2010, price: 0.003 },
+        { year: 2010, price: 0.3 },
         { year: 2011, price: 1 },
-        { year: 2012, price: 13 },
-        { year: 2013, price: 266 },
-        { year: 2014, price: 400 },
-        { year: 2015, price: 250 },
-        { year: 2016, price: 650 },
+        { year: 2011, price: 5 },
+        { year: 2012, price: 10 },
+        { year: 2013, price: 25 },
+        { year: 2013, price: 50 },
+        { year: 2013, price: 75 },
+        { year: 2013, price: 100 },
+        { year: 2016, price: 200 },
+        { year: 2016, price: 300 },
+        { year: 2016, price: 400 },
+        { year: 2016, price: 500 },
+        { year: 2016, price: 600 },
+        { year: 2016, price: 700 },
+        { year: 2016, price: 800 },
+        { year: 2016, price: 900 },
         { year: 2017, price: 1000 },
-        { year: 2018, price: 6000 },
-        { year: 2019, price: 3700 },
-        { year: 2020, price: 10000 },
-        { year: 2021, price: 30000 },
-        { year: 2022, price: 16000 },
-        { year: 2023, price: 27000 },
+        { year: 2017, price: 1250 },
+        { year: 2017, price: 1500 },
+        { year: 2017, price: 2000 },
+        { year: 2017, price: 2500 },
+        { year: 2017, price: 5000 },
+        { year: 2017, price: 7500 },
+        { year: 2017, price: 10000 },
+        { year: 2017, price: 15000 },
+        { year: 2017, price: 20000 },
+        { year: 2020, price: 28000 },
+        { year: 2021, price: 45000 },
+        { year: 2021, price: 50000 },
+        { year: 2021, price: 60000 },
+        { year: 2021, price: 68000 },
+        { year: 2024, price: 105000 },
       ];
-
+    
       // Handle Calculate Button Click
-      document
-        .getElementById("calculate")
-        .addEventListener("click", function () {
-          const btcPrice = parseFloat(
-            document.getElementById("btcPrice").value
-          );
-          const dogMultiplier = parseFloat(
-            document.getElementById("dogMultiplier").value
-          );
-          const investment = parseFloat(
-            document.getElementById("investment").value
-          );
-
-          if (btcPrice && dogMultiplier && investment) {
-            const futureValue = investment * dogMultiplier;
-            const btcQuantity = futureValue / btcPrice;
-
-            const closestPrice = historicalPrices.find(
-              (data) => data.price <= btcPrice / dogMultiplier
-            );
-
-            document.getElementById(
-              "futureValue"
-            ).textContent = `Future Value: $${futureValue}`;
-            document.getElementById(
-              "btcQuantity"
-            ).textContent = `Bitcoin You Could Buy: ${btcQuantity.toFixed(2)}`;
-            document.getElementById(
-              "historicalPrice"
-            ).textContent = `Equivalent Bitcoin Price: $${
-              closestPrice?.price || "N/A"
-            } (Year: ${closestPrice?.year || "N/A"})`;
-          } else {
-            alert("Please fill out all fields!");
-          }
-        });
+      document.getElementById("calculate").addEventListener("click", function () {
+        const btcPrice = parseFloat(btcPriceInput.value.replace(/,/g, "")); // Remove commas for calculation
+        const dogMultiplier = parseFloat(document.getElementById("dogMultiplier").value);
+        const investment = parseFloat(investmentInput.value.replace(/,/g, "")); // Remove commas for calculation
+    
+        if (btcPrice && dogMultiplier && investment) {
+          const futureValue = investment * dogMultiplier;
+          const btcQuantity = futureValue / btcPrice;
+          const equivalentPrice = btcPrice / dogMultiplier;
+    
+          const closestPrice = historicalPrices
+            .filter((data) => data.price <= equivalentPrice)
+            .reduce((prev, curr) => (curr.price > prev.price ? curr : prev), {
+              price: 0,
+              year: "N/A",
+            });
+    
+          // Format numbers for display
+          const formatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+          });
+    
+          const bitcoinFormatter = new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+    
+          document.getElementById("futureValue").textContent = `Future Value: ${formatter.format(futureValue)}`;
+          document.getElementById("btcQuantity").textContent = `Bitcoin You Could Buy: ${bitcoinFormatter.format(btcQuantity)}`;
+          document.getElementById(
+            "historicalPrice"
+          ).textContent = `Equivalent Bitcoin Price: ${formatter.format(
+            closestPrice.price
+          )} (Year: ${closestPrice.year})`;
+        } else {
+          alert("Please fill out all fields!");
+        }
+      });
+    
+      // Add formatted placeholder text
+      btcPriceInput.placeholder = "e.g., " + formatNumberWithCommas("100000");
+      investmentInput.placeholder = "e.g., " + formatNumberWithCommas("1000");
     </script>
   </body>
 </html>
